@@ -23,7 +23,7 @@ import VideoSettings from '../../constantsConfiguration/videoSettings';
 // ===================================================================
 import { SkeletonLoader, CustomIcon } from 'components'
 
-const displayVideo = false
+const displayVideo = true
 
 const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, changeFocusedIndex }) => {
   // ===================================================================
@@ -56,13 +56,14 @@ const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, 
   }
 
   const onPlay = () => {
-    // if (!focused) {
-    //   changeFocusedIndex(index)
-    // }
+    console.log('focused ', focused)
+    if (!focused) {
+      changeFocusedIndex(index)
+    }
   }
 
   const onPause = (data) => {
-    // changeFocusedIndex(null)
+    changeFocusedIndex(null)
   }
 
 
@@ -113,6 +114,7 @@ const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, 
                       source={{ uri: `${item.sources}` }}
                       poster={`${VideoSettings.SOURCE}/${item.thumb}`}
                       posterResizeMode="cover"
+                      resizeMode="cover"
                       ref={player}
                       onBuffer={onBuffer}
                       onError={videoError}

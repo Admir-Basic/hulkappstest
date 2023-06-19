@@ -157,10 +157,9 @@ const Home = ({ navigation }) => {
 
   const handleScroll = useCallback((e) => {
 
-    // let index = calculateOffset(e.nativeEvent.contentOffset.y, e.nativeEvent.layoutMeasurement.height, list);
-    // if (focusedIndex != index)
-    //   changeFocusedIndex(index)
-    // setFocusedIndex(index)
+    let index = calculateOffset(e.nativeEvent.contentOffset.y, e.nativeEvent.layoutMeasurement.height, list);
+    if (focusedIndex != index)
+      changeFocusedIndex(index)
 
   }, [list, focusedIndex]);
 
@@ -170,7 +169,9 @@ const Home = ({ navigation }) => {
   }
 
   const calculateOffset = useCallback((position, height, listA) => {
-    let offset = position < VideoSettings.VIDEO_HEIGHT * 1.4 ? 0.66 : 1
+    // let offset = position < VideoSettings.VIDEO_HEIGHT * 1.4 ? 0.66 : 1
+    let offset = 0.6
+
     let middle = (height / 2) - (VideoSettings.VIDEO_HEIGHT * offset);
     let middleIndex = Math.round((height / VideoSettings.VIDEO_HEIGHT / 2));
 
@@ -193,6 +194,10 @@ const Home = ({ navigation }) => {
 
       <View onLayout={onLayout} style={{ width: '100%', flex: 1 }} >
 
+        <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: -1 }}>
+          <View style={{ width: '100%', height: 2, backgroundColor: 'red', marginTop: -1 }} />
+        </View>
+
         <FlatList
           style={{ flex: 1 }}
           scrollEnabled={!isLoading}
@@ -205,12 +210,14 @@ const Home = ({ navigation }) => {
             return item?.thumb || `${index}item`;
           }}
 
-          /* onEndReached={() => { if (list !== null) callOnScrollEnd.current = true }}
-          onMomentumScrollEnd={() => {
+          onEndReached={() => { if (list !== null) callOnScrollEnd.current = true }}
+          onMomentumScrollEnd={(e) => {
             if (callOnScrollEnd.current && list && list.length > 0 && !endReached && list.length < allList.current.length && !isLoading) onEndReachedFatch(allList.current, list, list.length)
             callOnScrollEnd.current = false
+
+            handleScroll(e)
           }}
-          onEndReachedThreshold={0.5} */
+          onEndReachedThreshold={0.5}
 
           renderItem={({ item, index }) => (
             <ListSingleVideo

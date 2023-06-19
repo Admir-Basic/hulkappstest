@@ -33,7 +33,7 @@ const Home = ({ navigation }) => {
   const dispatch = useDispatch()
   const videosProgress = useSelector(selectVideosProgress)
   // ===================================================================
-  
+
   let item = {
     description: "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him, something snaps... and the rabbit ain't no bunny anymore! In the typical cartoon tradition he prepares the nasty rodents a comical revenge.\n\nLicensed under the Creative Commons Attribution license\nhttps://www.bigbuckbunny.org",
     sources: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
@@ -110,6 +110,7 @@ const Home = ({ navigation }) => {
                       source={{ uri: `${item.sources}` }}
                       poster={`${VideoSettings.SOURCE}/${item.thumb}`}
                       posterResizeMode="cover"
+                      resizeMode="cover"
                       ref={player}
                       onBuffer={onBuffer}
                       onError={videoError}
@@ -122,10 +123,10 @@ const Home = ({ navigation }) => {
 
                       onProgress={onProgress}
 
-                      onLoad={() => {
+                      /* onLoad={() => {
                         // if (focused)
                         seekProgress()
-                      }}
+                      }} */
 
                       onPlay={onPlay}
                       onPause={onPause}

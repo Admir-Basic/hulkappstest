@@ -12,8 +12,8 @@ import { moduleNames } from 'constantsConfiguration/enums/modules';
 // ===================================================================
 // Screens
 // ===================================================================
-import Home from 'screens/Home/ScreenMainComponent';
-import VideoDetails from 'screens/VideoDetails/ScreenMainComponent';
+import Home from 'screens/HomeFlashList';
+import VideoDetails from 'screens/VideoDetails';
 // ===================================================================
 // Constants
 // ===================================================================
