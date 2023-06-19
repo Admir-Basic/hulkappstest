@@ -1,19 +1,22 @@
 // =================================================================== 
 // Libraries
 // ===================================================================
-import React, { memo, useCallback, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView, FlatList, View, Text, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, Dimensions, TouchableOpacity } from 'react-native';
-import Video from 'react-native-video';
-import VideoPlayer from 'react-native-video-controls';
 
 import { SharedElement } from 'react-navigation-shared-element';
+import convertToCache, { convertAsync } from "react-native-video-cache";
 // ===================================================================
 // Redux
 // ===================================================================
 import { useDispatch, useSelector } from 'react-redux';
-import { selectVideosProgress, setVideoProgress } from 'reduxConfiguration/slices/videosSlice';
+import { setVideoProgress } from 'reduxConfiguration/slices/videosSlice';
+import { selectOfflineMode } from 'reduxConfiguration/slices/netInfoSlice';
 // ===================================================================
-
+// Components
+// ===================================================================
+import VideoComponent from './VideoComponent'
+import VideoInfo from './VideoInfo'
 // ===================================================================
 // Constants
 // ===================================================================
@@ -25,38 +28,52 @@ import { SkeletonLoader, CustomIcon } from 'components'
 
 const displayVideo = true
 
-const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, changeFocusedIndex }) => {
+const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, changeFocusedIndex, videoProgress }) => {
   // ===================================================================
   // Redux Props
   // -------------------------------------------------------------------
   const dispatch = useDispatch()
-  const videosProgress = useSelector(selectVideosProgress)
   // ===================================================================
 
+  const [videoProgressLocal, setVideoProgressLocal] = useState(videoProgress)
+
   const player = useRef(null)
-  const progress = useRef(null)
 
-  const onBuffer = (buffer) => {
-    // console.log('buffer ', JSON.stringify(buffer, null, 2))
-  }
+  useEffect(() => {
+    if (!isLoading && index < 3) {
+      setVideoProgressLocal(videoProgress)
+    }
+  }, [isLoading])
 
-  const videoError = (err) => {
-    // console.log('err ', JSON.stringify(err, null, 2))
-  }
+  /*  const progress = useRef(null)
+ 
+   const [cashedVideo, setCashedVideo] = useState(null)
+ 
+   const onBuffer = (buffer) => {
+     // console.log('buffer ', JSON.stringify(buffer, null, 2))
+   }
+ 
+   const videoError = (err) => {
+     // console.log('err ', JSON.stringify(err, null, 2))
+   }
+ 
+   const onProgress = (data) => {
+     // console.log('data ', data)
+     dispatch(setVideoProgress(
+       {
+         id: item.thumb,
+         time: data.currentTime
+       }
+     ))
+     // progress.current = data.currentTime
+   } */
 
-  const onProgress = (data) => {
-    // console.log('data ', data)
-    /* dispatch(setVideoProgress(
-      {
-        id: item.thumb,
-        time: data.currentTime
-      }
-    )) */
-    progress.current = data.currentTime
-  }
+  /* if (focused) {
+    console.log('focused ', index)
+  } */
 
-  const onPlay = () => {
-    console.log('focused ', focused)
+  /* const onPlay = () => {
+
     if (!focused) {
       changeFocusedIndex(index)
     }
@@ -65,170 +82,52 @@ const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, 
   const onPause = (data) => {
     changeFocusedIndex(null)
   }
+ */
 
 
-
-  useEffect(() => {
-    // seekProgress()
-
-    // return () => { saveProgressLocally() }
+  /* useEffect(() => {
+    console.log('usao')
+    seekProgress()
   }, [player])
 
-  const saveProgressLocally = useCallback(() => {
-    // dispatch(setVideoProgress(
-    //   {
-    //     id: item.thumb,
-    //     time: progress.current
-    //   }
-    // ))
-  }, [progress, item])
+  console.log('videoProgress ', videoProgress)
 
-  const seekProgress = useCallback((time) => {
-    // if (player?.current && videosProgress[item.thumb] != undefined && videosProgress[item.thumb] != null && focused) {
-    //   // console.log('usao1 ============= ', videosProgress[item.thumb])
-    //   player.current.seekTo(videosProgress[item.thumb])
+  const seekProgress = useCallback(() => {
+    if (player?.current && videoProgress != undefined && videoProgress != null) {
+      console.log('usao1 ============= ', videoProgress)
+      player.current.seekTo(videoProgress)
 
-    // }
-  }, [player, focused])
+    }
+  }, [player]) */
 
-  if (index === 3) console.log('test ======================= ')
+  if (index < 2) console.log('focused parent ', index, ' - ', focused)
 
   return (
 
     <View style={{ width: '100%', height: VideoSettings.VIDEO_HEIGHT, padding: 5, }} >
       <View style={{ width: '100%', height: '100%', }}>
 
-        {/* <TouchableOpacity onPress={() => { navigation.push(moduleNames.VIDEO_DETAILS, { item }) }} style={{ width: '100%', height: '100%', backgroundColor: '#00000010', position: 'absolute', zIndex: 10 }}>
-        </TouchableOpacity> */}
-
         <SharedElement id={`item.${item.thumb}`}>
           <View style={{ width: '100%', height: VideoSettings.VIDEO_HEIGHT - 10, padding: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackground, borderRadius: 5 }} >
-            <View style={{ width: '100%', flex: 1, borderRadius: 5, overflow: 'hidden' }}>
-              <SkeletonLoader
-                displaySkeletonLoader={isLoading}
-                customStyleMainContainer={{ width: '100%', height: '100%', }}
-              >
-                <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackgroundInner }}>
-                  {displayVideo
-                    ? <VideoPlayer
-                      source={{ uri: `${item.sources}` }}
-                      poster={`${VideoSettings.SOURCE}/${item.thumb}`}
-                      posterResizeMode="cover"
-                      resizeMode="cover"
-                      ref={player}
-                      onBuffer={onBuffer}
-                      onError={videoError}
-                      videoStyle={{ width: Dimensions.get('screen').width - 10, height: VideoSettings.VIDEO_HEIGHT - 25 - VideoSettings.VIDEO_INFO_HEIGHT }}
-                      paused={!focused}
-                      toggleResizeModeOnFullscreen={false}
-                      tapAnywhereToPause={true}
-                      showOnStart={true}
-                      doubleTapTime={-1}
 
-                      onProgress={onProgress}
+            <VideoComponent
+              refPlayer={player}
+              item={item}
+              focused={focused}
+              index={index}
+              isLoading={isLoading}
+              changeFocusedIndex={changeFocusedIndex}
+              videoProgressLocal={videoProgressLocal}
+            />
 
-                      onLoad={() => {
-                        // if (focused)
-                        seekProgress()
-                      }}
-
-                      onPlay={onPlay}
-                      onPause={onPause}
-
-                      // disablePlayPause
-                      // disableSeekbar
-                      // disableTimer
-                      disableFullscreen
-                      disableBack
-                      disableVolume
-                    />
-
-                    : <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', }}>
-                      <Text style={{ color: ColorsPalett.textColorMain, fontSize: 16 }} >{item?.thumb}</Text>
-                      <Text style={{ color: ColorsPalett.textColorMain, fontSize: 16 }} >{focused ? 'Play' : 'Pause'}</Text>
-                    </View>
-                  }
-
-                </View>
-              </SkeletonLoader>
-
-            </View>
-
-            <TouchableOpacity disabled={isLoading} onPress={() => { navigation.push(moduleNames.VIDEO_DETAILS, { item }) }} style={{ width: '100%', height: VideoSettings.VIDEO_INFO_HEIGHT, marginTop: 5, borderRadius: 5, overflow: 'hidden', backgroundColor: ColorsPalett.cardBackgroundInner }}>
-
-              <View style={{ width: '100%', height: '100%', flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 5, paddingVertical: 5, }}>
-                <View style={{ width: 70, height: '100%', justifyContent: 'center', alignItems: 'center', }} >
-                  <View style={{ width: 55, height: 55, borderRadius: 100, overflow: 'hidden', justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackgroundIcon }} >
-                    <SkeletonLoader
-                      displaySkeletonLoader={isLoading}
-                    >
-                      <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', }} >
-                        <CustomIcon type={'Feather'} name={'user'} color={ColorsPalett.textColorWhite} style={{ fontSize: 30 }} />
-                      </View>
-                    </SkeletonLoader>
-                  </View>
-                </View>
-                <View style={{ flex: 1, height: '100%', justifyContent: 'space-around', paddingHorizontal: 5, paddingVertical: 5, }}>
-                  <View style={{ width: '100%', height: '45%', justifyContent: 'center', borderRadius: 5, overflow: 'hidden' }}>
-                    <SkeletonLoader
-                      displaySkeletonLoader={isLoading}
-                    >
-                      <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
-                        <Text style={{ color: ColorsPalett.textColorWhite, fontSize: 16 }} numberOfLines={1} >{item?.title}</Text>
-                      </View>
-                    </SkeletonLoader>
-                  </View>
-
-                  <View style={{ width: '100%', height: '45%', justifyContent: 'center', borderRadius: 5, overflow: 'hidden' }}>
-                    <SkeletonLoader
-                      displaySkeletonLoader={isLoading}
-                    >
-                      <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
-                        <Text style={{ color: ColorsPalett.textColorSecond, fontSize: 12 }} numberOfLines={1} >{item?.description}</Text>
-                      </View>
-                    </SkeletonLoader>
-                  </View>
-                </View>
-              </View>
-
-            </TouchableOpacity>
+            <VideoInfo
+              navigation={navigation}
+              item={item}
+              isLoading={isLoading}
+            />
 
           </View>
         </SharedElement>
-
-        {/* <Video
-          source={{ uri: `${SOURCE}/${item.id}.mp4` }}
-          poster={`${SOURCE}/images/${item.id}.jpg`}
-          posterResizeMode="contain"
-          // ref=(videoRef)
-          onBuffer={onBuffer}
-          onError={videoError}
-          style={{ width: Dimensions.get('screen').width - 10, height: VideoSettings.VIDEO_HEIGHT - 10 }}
-          paused={!focused}
-        /> */}
-
-        {/* <VideoPlayer
-          source={{ uri: `${SOURCE}/${item.id}.mp4` }}
-          poster={`${SOURCE}/images/${item.id}.jpg`}
-          posterResizeMode="stretch"
-          // ref=(videoRef)
-          onBuffer={onBuffer}
-          onError={videoError}
-          videoStyle={{ width: Dimensions.get('screen').width - 10, height: VideoSettings.VIDEO_HEIGHT - 10 }}
-          paused={!focused}
-          toggleResizeModeOnFullscreen={false}
-          tapAnywhereToPause={true}
-          showOnStart={false}
-
-          doubleTapTime={-1}
-
-          // disableFullscreen
-          // disablePlayPause
-          // disableSeekbar
-          disableTimer
-          disableBack
-          disableVolume
-        /> */}
 
       </View >
     </View >

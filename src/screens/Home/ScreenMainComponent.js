@@ -8,6 +8,7 @@ import { SafeAreaView, FlatList, View, Text, RefreshControl, StyleSheet, NativeS
 // ===================================================================
 import { useDispatch, useSelector } from 'react-redux';
 import { selectNetInfo, } from 'reduxConfiguration/slices/netInfoSlice';
+import { selectVideosProgress } from 'reduxConfiguration/slices/videosSlice';
 // ===================================================================
 // Components
 // ===================================================================
@@ -51,9 +52,8 @@ const Home = ({ navigation }) => {
   // Redux Props
   // -------------------------------------------------------------------
   const netInfo = useSelector(selectNetInfo)
+  const videosProgress = useSelector(selectVideosProgress)
   // ===================================================================
-
-  console.log('videosProgress ')
 
   const [state, dispatch] = useReducer(reducer, initialState)
   const { isLoading, list, refresh, searchText, focusedIndex, endReached } = state;
@@ -88,9 +88,12 @@ const Home = ({ navigation }) => {
             setTimeout(() => {
               updateList(true, videos, null, 0)
             }, fromRefresh ? 0 : 1000)
+          } else {
+            dispatch({ type: 'updateLocalList', payload: { list: [], endReached: true } })
           }
         })
         .catch((err) => {
+          dispatch({ type: 'updateLocalList', payload: { list: [], endReached: true } })
         })
     } else {
 
@@ -156,10 +159,11 @@ const Home = ({ navigation }) => {
   }, [])
 
   const handleScroll = useCallback((e) => {
+    console.log('handleScroll ', JSON.stringify(e.nativeEvent, null, 2))
 
-    let index = calculateOffset(e.nativeEvent.contentOffset.y, e.nativeEvent.layoutMeasurement.height, list);
+    /* let index = calculateOffset(e.nativeEvent.contentOffset.y, e.nativeEvent.layoutMeasurement.height, list);
     if (focusedIndex != index)
-      changeFocusedIndex(index)
+      changeFocusedIndex(index) */
 
   }, [list, focusedIndex]);
 
@@ -202,12 +206,12 @@ const Home = ({ navigation }) => {
           style={{ flex: 1 }}
           scrollEnabled={!isLoading}
           // onScroll={handleScroll}
-          // onScrollEndDrag={handleScroll}
+          onScrollEndDrag={handleScroll}
           data={list || defaultData}
           initialNumToRender={5}
           contentContainerStyle={{ paddingBottom: 20, }}
           keyExtractor={(item, index) => {
-            return item?.thumb || `${index}item`;
+            return `${item?.thumb}${index}item` || `${index}item`;
           }}
 
           onEndReached={() => { if (list !== null) callOnScrollEnd.current = true }}
@@ -215,7 +219,7 @@ const Home = ({ navigation }) => {
             if (callOnScrollEnd.current && list && list.length > 0 && !endReached && list.length < allList.current.length && !isLoading) onEndReachedFatch(allList.current, list, list.length)
             callOnScrollEnd.current = false
 
-            handleScroll(e)
+            // handleScroll(e)
           }}
           onEndReachedThreshold={0.5}
 
@@ -227,6 +231,7 @@ const Home = ({ navigation }) => {
               navigation={navigation}
               isLoading={isLoading}
               changeFocusedIndex={changeFocusedIndex}
+              videoProgress={videosProgress[item.thumb] || null}
 
             />
           )

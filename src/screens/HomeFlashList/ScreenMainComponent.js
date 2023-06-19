@@ -9,6 +9,7 @@ import { FlashList } from "@shopify/flash-list";
 // ===================================================================
 import { useDispatch, useSelector } from 'react-redux';
 import { selectNetInfo, } from 'reduxConfiguration/slices/netInfoSlice';
+import { selectVideosProgress } from 'reduxConfiguration/slices/videosSlice';
 // ===================================================================
 // Components
 // ===================================================================
@@ -52,9 +53,8 @@ const Home = ({ navigation }) => {
   // Redux Props
   // -------------------------------------------------------------------
   const netInfo = useSelector(selectNetInfo)
+  const videosProgress = useSelector(selectVideosProgress)
   // ===================================================================
-
-  console.log('videosProgress ')
 
   const [state, dispatch] = useReducer(reducer, initialState)
   const { isLoading, list, refresh, searchText, focusedIndex, endReached } = state;
@@ -89,9 +89,12 @@ const Home = ({ navigation }) => {
             setTimeout(() => {
               updateList(true, videos, null, 0)
             }, fromRefresh ? 0 : 1000)
+          } else {
+            dispatch({ type: 'updateLocalList', payload: { list: [], endReached: true } })
           }
         })
         .catch((err) => {
+          dispatch({ type: 'updateLocalList', payload: { list: [], endReached: true } })
         })
     } else {
 
@@ -103,7 +106,6 @@ const Home = ({ navigation }) => {
   }, [])
 
   const updateList = useCallback((first = false, list, displayedList, nextIndex, searchText = null) => {
-    // console.log('listHeight.current ', listHeight.current)
     if (nextIndex >= list.length) {
       dispatch({ type: 'setEndReached', payload: true })
       callOnScrollEnd.current = false
@@ -117,8 +119,6 @@ const Home = ({ navigation }) => {
 
       if (first) {
         let index = calculateOffset(0, listHeight.current, list)
-
-        console.log('index ', index)
 
         dispatch({ type: 'updateLocalListWithIndex', payload: { list: newList, endReached: endReached, focusedIndex: index } })
       }
@@ -157,11 +157,10 @@ const Home = ({ navigation }) => {
   }, [])
 
   const handleScroll = useCallback((e) => {
-
     let index = calculateOffset(e.nativeEvent.contentOffset.y, e.nativeEvent.layoutMeasurement.height, list);
+    
     if (focusedIndex != index)
-      changeFocusedIndex(index)
-    // setFocusedIndex(index)
+       changeFocusedIndex(index)
 
   }, [list, focusedIndex]);
 
@@ -182,6 +181,7 @@ const Home = ({ navigation }) => {
   }, []);
 
   const changeFocusedIndex = useCallback((index) => {
+    console.log('changeFocusedIndex ', index)
     dispatch({ type: 'setFocusedIndex', payload: index })
   }, [])
 
@@ -196,8 +196,11 @@ const Home = ({ navigation }) => {
 
       <View onLayout={onLayout} style={{ width: '100%', flex: 1 }} >
 
+        <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: -1 }}>
+          <View style={{ width: '100%', height: 2, backgroundColor: 'red', marginTop: -1 }} />
+        </View>
+
         <FlashList
-          // style={{ flex: 1 }}
           scrollEnabled={!isLoading}
           estimatedItemSize={VideoSettings.VIDEO_HEIGHT}
           // onScroll={handleScroll}
@@ -206,15 +209,19 @@ const Home = ({ navigation }) => {
           initialNumToRender={5}
           contentContainerStyle={{ paddingBottom: 20, }}
           keyExtractor={(item, index) => {
-            return item?.thumb || `${index}item`;
+            return `${item?.thumb}${index}item` || `${index}item`;
           }}
 
           onEndReached={() => { if (list !== null) callOnScrollEnd.current = true }}
-          onMomentumScrollEnd={() => {
+          onMomentumScrollEnd={(e) => {
             if (callOnScrollEnd.current && list && list.length > 0 && !endReached && list.length < allList.current.length && !isLoading) onEndReachedFatch(allList.current, list, list.length)
             callOnScrollEnd.current = false
+
+            // handleScroll(e)
           }}
           onEndReachedThreshold={0.5}
+
+          extraData={focusedIndex}
 
           renderItem={({ item, index }) => (
             <ListSingleVideo
@@ -224,6 +231,7 @@ const Home = ({ navigation }) => {
               navigation={navigation}
               isLoading={isLoading}
               changeFocusedIndex={changeFocusedIndex}
+              videoProgress={videosProgress[item.thumb] || null}
 
             />
           )

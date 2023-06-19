@@ -12,7 +12,9 @@ import { moduleNames } from 'constantsConfiguration/enums/modules';
 // ===================================================================
 // Screens
 // ===================================================================
+// import Home from 'screens/Home';
 import Home from 'screens/HomeFlashList';
+// import Home from 'screens/HomeTest';
 import VideoDetails from 'screens/VideoDetails';
 // ===================================================================
 // Constants
