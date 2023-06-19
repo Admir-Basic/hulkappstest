@@ -5,11 +5,12 @@ import React, { useState, useCallback, useEffect, useRef, useReducer, memo } fro
 import { SafeAreaView, FlatList, View, Text, RefreshControl, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, Dimensions, TouchableOpacity } from 'react-native';
 import Video from 'react-native-video';
 import VideoPlayer from 'react-native-video-controls';
+import convertToCache, { convertAsync } from "react-native-video-cache";
 // ===================================================================
 // Redux
 // ===================================================================
 import { useDispatch, useSelector } from 'react-redux';
-import { selectNetInfo, } from 'reduxConfiguration/slices/netInfoSlice';
+import { selectNetInfo, selectOfflineMode } from 'reduxConfiguration/slices/netInfoSlice';
 import { selectVideosProgress, setVideoProgress } from 'reduxConfiguration/slices/videosSlice';
 // ===================================================================
 // Components
@@ -32,6 +33,7 @@ const Home = ({ navigation }) => {
   // -------------------------------------------------------------------
   const dispatch = useDispatch()
   const videosProgress = useSelector(selectVideosProgress)
+  const offlineMode = useSelector(selectOfflineMode)
   // ===================================================================
 
   let item = {
@@ -52,6 +54,9 @@ const Home = ({ navigation }) => {
 
   const player = useRef(null)
   const progress = useRef(null)
+  // const cashedVideo = useRef(null)
+
+  const [cashedVideo, setCashedVideo] = useState(null)
 
   const onBuffer = (buffer) => {
     // console.log('buffer ', JSON.stringify(buffer, null, 2))
@@ -83,15 +88,34 @@ const Home = ({ navigation }) => {
   }, [])
 
   const seekProgress = useCallback((time) => {
-    if (player?.current && videosProgress[item.thumb] != undefined && videosProgress[item.thumb] != null && focused) {
+    /* if (player?.current && videosProgress[item.thumb] != undefined && videosProgress[item.thumb] != null && focused) {
       // console.log('usao1 ============= ', videosProgress[item.thumb])
       player.current.seekTo(videosProgress[item.thumb])
 
+    } */
+    console.log('progress.current ', progress.current)
+    if (progress.current) {
+      player.current.seekTo(progress.current)
     }
   }, [])
 
+  useEffect(() => {
+    let url = item.sources;
+    convertAsync(url).then((res) => { setCashedVideo(res); })
+  }, [])
+
+  /*  useEffect(() => {
+     console.log('usao')
+     seekProgress()
+   }, [offlineMode]) */
+
+  console.log('offlineMode ', offlineMode && cashedVideo ? cashedVideo : item.sources)
   return (
     <View style={{ flex: 1, backgroundColor: ColorsPalett.mainBackground }}>
+
+      <Header
+        displayMode
+      />
       <View style={{ width: '100%', height: VideoSettings.VIDEO_HEIGHT, padding: 5, }} >
         <View style={{ width: '100%', height: '100%', }}>
 
@@ -107,7 +131,7 @@ const Home = ({ navigation }) => {
                 <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackgroundInner }}>
                   {displayVideo
                     ? <VideoPlayer
-                      source={{ uri: `${item.sources}` }}
+                      source={{ uri: offlineMode && cashedVideo ? cashedVideo : item?.sources ? item.sources : null }}
                       poster={`${VideoSettings.SOURCE}/${item.thumb}`}
                       posterResizeMode="cover"
                       resizeMode="cover"
@@ -123,10 +147,10 @@ const Home = ({ navigation }) => {
 
                       onProgress={onProgress}
 
-                      /* onLoad={() => {
+                      onLoad={() => {
                         // if (focused)
                         seekProgress()
-                      }} */
+                      }}
 
                       onPlay={onPlay}
                       onPause={onPause}
