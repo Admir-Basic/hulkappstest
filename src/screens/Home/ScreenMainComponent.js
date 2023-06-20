@@ -105,7 +105,6 @@ const Home = ({ navigation }) => {
   }, [])
 
   const updateList = useCallback((first = false, list, displayedList, nextIndex, searchText = null) => {
-    // console.log('listHeight.current ', listHeight.current)
     if (nextIndex >= list.length) {
       dispatch({ type: 'setEndReached', payload: true })
       callOnScrollEnd.current = false
@@ -119,8 +118,6 @@ const Home = ({ navigation }) => {
 
       if (first) {
         let index = calculateOffset(0, listHeight.current, list)
-
-        console.log('index ', index)
 
         dispatch({ type: 'updateLocalListWithIndex', payload: { list: newList, endReached: endReached, focusedIndex: index } })
       }
@@ -159,11 +156,10 @@ const Home = ({ navigation }) => {
   }, [])
 
   const handleScroll = useCallback((e) => {
-    console.log('handleScroll ', JSON.stringify(e.nativeEvent, null, 2))
 
-    /* let index = calculateOffset(e.nativeEvent.contentOffset.y, e.nativeEvent.layoutMeasurement.height, list);
+    let index = calculateOffset(e.nativeEvent.contentOffset.y, e.nativeEvent.layoutMeasurement.height, list);
     if (focusedIndex != index)
-      changeFocusedIndex(index) */
+      changeFocusedIndex(index)
 
   }, [list, focusedIndex]);
 

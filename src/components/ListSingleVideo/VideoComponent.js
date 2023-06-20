@@ -25,7 +25,7 @@ import VideoSettings from '../../constantsConfiguration/videoSettings';
 // ===================================================================
 import { SkeletonLoader, CustomIcon } from 'components'
 
-const VideoComponent = ({ index, item, focused = false, isLoading, changeFocusedIndex, videoProgressLocal }) => {
+const VideoComponent = ({ index, item, focused = false, isLoading, changeFocusedIndex, videoProgressLocal, updateLocalProgress }) => {
   // ===================================================================
   // Redux Props
   // -------------------------------------------------------------------
@@ -33,21 +33,18 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
   const offlineMode = useSelector(selectOfflineMode)
   // ===================================================================
 
-  // if (index === 1) console.log('usao ============== ')
-
   const player = useRef(null)
 
   const [cashedVideo, setCashedVideo] = useState(null)
 
   const onBuffer = (buffer) => {
-    // console.log('buffer ', JSON.stringify(buffer, null, 2))
   }
 
   const videoError = (err) => {
-    // console.log('err ', JSON.stringify(err, null, 2))
   }
 
   const onProgress = (data) => {
+    updateLocalProgress(data.currentTime)
 
     dispatch(setVideoProgress(
       {
@@ -70,7 +67,7 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
 
   const onEnd = () => {
     player.current.seekTo(0)
-    
+
     setTimeout(() => {
       dispatch(setVideoProgress(
         {
@@ -99,11 +96,9 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
   useEffect(() => {
     if (item?.sources && !isLoading) {
       let url = item.sources;
-      convertAsync(url).then((res) => { if (index === 1) console.log({res}); setCashedVideo(res); })
+      convertAsync(url).then((res) => { setCashedVideo(res); })
     }
   }, [isLoading])
-
-  if (index === 1) console.log('url ======== ', offlineMode && cashedVideo ? cashedVideo : item?.sources ? item.sources : null)
 
   return (
     <View style={{ width: '100%', flex: 1, borderRadius: 5, overflow: 'hidden' }}>

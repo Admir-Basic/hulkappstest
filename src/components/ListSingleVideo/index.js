@@ -28,16 +28,11 @@ import { SkeletonLoader, CustomIcon } from 'components'
 
 const displayVideo = true
 
-const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, changeFocusedIndex, videoProgress }) => {
-  // ===================================================================
-  // Redux Props
-  // -------------------------------------------------------------------
-  const dispatch = useDispatch()
-  // ===================================================================
+const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, changeFocusedIndex, videoProgress, /* openVideo */ }) => {
 
   const [videoProgressLocal, setVideoProgressLocal] = useState(videoProgress)
 
-  const player = useRef(null)
+  const progress = useRef(null)
 
   useEffect(() => {
     if (!isLoading && index < 3) {
@@ -45,62 +40,13 @@ const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, 
     }
   }, [isLoading])
 
-  /*  const progress = useRef(null)
- 
-   const [cashedVideo, setCashedVideo] = useState(null)
- 
-   const onBuffer = (buffer) => {
-     // console.log('buffer ', JSON.stringify(buffer, null, 2))
-   }
- 
-   const videoError = (err) => {
-     // console.log('err ', JSON.stringify(err, null, 2))
-   }
- 
-   const onProgress = (data) => {
-     // console.log('data ', data)
-     dispatch(setVideoProgress(
-       {
-         id: item.thumb,
-         time: data.currentTime
-       }
-     ))
-     // progress.current = data.currentTime
-   } */
+  const updateLocalProgress = useCallback((progressA) => {
+    progress.current = progressA;
+  }, [])
 
-  /* if (focused) {
-    console.log('focused ', index)
-  } */
-
-  /* const onPlay = () => {
-
-    if (!focused) {
-      changeFocusedIndex(index)
-    }
-  }
-
-  const onPause = (data) => {
-    changeFocusedIndex(null)
-  }
- */
-
-
-  /* useEffect(() => {
-    console.log('usao')
-    seekProgress()
-  }, [player])
-
-  console.log('videoProgress ', videoProgress)
-
-  const seekProgress = useCallback(() => {
-    if (player?.current && videoProgress != undefined && videoProgress != null) {
-      console.log('usao1 ============= ', videoProgress)
-      player.current.seekTo(videoProgress)
-
-    }
-  }, [player]) */
-
-  if (index < 2) console.log('focused parent ', index, ' - ', focused)
+  const openVideo = useCallback((itemA) => {
+    navigation.push(moduleNames.VIDEO_DETAILS, { item: itemA, progress: progress.current })
+  }, [progress])
 
   return (
 
@@ -108,25 +54,26 @@ const ListSingleVideo = ({ navigation, index, item, focused = false, isLoading, 
       <View style={{ width: '100%', height: '100%', }}>
 
         {/* <SharedElement id={`item.${item.thumb}`}> */}
-          <View style={{ width: '100%', height: VideoSettings.VIDEO_HEIGHT - 10, padding: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackground, borderRadius: 5 }} >
+        <View style={{ width: '100%', height: VideoSettings.VIDEO_HEIGHT - 10, padding: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackground, borderRadius: 5 }} >
 
-            <VideoComponent
-              refPlayer={player}
-              item={item}
-              focused={focused}
-              index={index}
-              isLoading={isLoading}
-              changeFocusedIndex={changeFocusedIndex}
-              videoProgressLocal={videoProgressLocal}
-            />
+          <VideoComponent
+            item={item}
+            focused={focused}
+            index={index}
+            isLoading={isLoading}
+            changeFocusedIndex={changeFocusedIndex}
+            videoProgressLocal={videoProgressLocal}
+            updateLocalProgress={updateLocalProgress}
+          />
 
-            <VideoInfo
-              navigation={navigation}
-              item={item}
-              isLoading={isLoading}
-            />
+          <VideoInfo
+            navigation={navigation}
+            item={item}
+            isLoading={isLoading}
+            openVideo={openVideo}
+          />
 
-          </View>
+        </View>
         {/* </SharedElement> */}
 
       </View >

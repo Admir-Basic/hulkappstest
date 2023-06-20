@@ -158,9 +158,9 @@ const Home = ({ navigation }) => {
 
   const handleScroll = useCallback((e) => {
     let index = calculateOffset(e.nativeEvent.contentOffset.y, e.nativeEvent.layoutMeasurement.height, list);
-    
+
     if (focusedIndex != index)
-       changeFocusedIndex(index)
+      changeFocusedIndex(index)
 
   }, [list, focusedIndex]);
 
@@ -181,7 +181,6 @@ const Home = ({ navigation }) => {
   }, []);
 
   const changeFocusedIndex = useCallback((index) => {
-    console.log('changeFocusedIndex ', index)
     dispatch({ type: 'setFocusedIndex', payload: index })
   }, [])
 
@@ -232,7 +231,6 @@ const Home = ({ navigation }) => {
               isLoading={isLoading}
               changeFocusedIndex={changeFocusedIndex}
               videoProgress={videosProgress[item.thumb] || null}
-
             />
           )
           }

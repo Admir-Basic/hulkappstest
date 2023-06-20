@@ -88,12 +88,6 @@ const Home = ({ navigation }) => {
   }, [])
 
   const seekProgress = useCallback((time) => {
-    /* if (player?.current && videosProgress[item.thumb] != undefined && videosProgress[item.thumb] != null && focused) {
-      // console.log('usao1 ============= ', videosProgress[item.thumb])
-      player.current.seekTo(videosProgress[item.thumb])
-
-    } */
-    console.log('progress.current ', progress.current)
     if (progress.current) {
       player.current.seekTo(progress.current)
     }
@@ -104,12 +98,6 @@ const Home = ({ navigation }) => {
     convertAsync(url).then((res) => { setCashedVideo(res); })
   }, [])
 
-  /*  useEffect(() => {
-     console.log('usao')
-     seekProgress()
-   }, [offlineMode]) */
-
-  console.log('offlineMode ', offlineMode && cashedVideo ? cashedVideo : item.sources)
   return (
     <View style={{ flex: 1, backgroundColor: ColorsPalett.mainBackground }}>
 

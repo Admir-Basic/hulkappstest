@@ -2,6 +2,7 @@
 // Libraries
 // ===================================================================
 import * as React from 'react';
+import { Platform } from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
@@ -73,17 +74,24 @@ function AppNavigator(props) {
         >
             <Stack.Navigator
                 screenOptions={({ route, navigation, }) => {
-                    console.log('route ', JSON.stringify(route, null, 2))
                     return ({
-                    headerShown: false,
-                    orientation: route.name === moduleNames.HOME ? 'portrait' : 'all',
-                    gestureEnabled: false,
-                    animation: 'slide_from_left',
-                })}}
+                        headerShown: false,
+                        orientation: 'portrait',
+                        gestureEnabled: false,
+                        animation: 'slide_from_left',
+                        tabBarStyle: { display: 'none' }, tabBarVisible: false
+                    })
+                }}
             >
                 {/* < Stack.Screen name={'Share'} component={ShareNavigator} /> */}
                 < Stack.Screen name={moduleNames.HOME} component={Home} />
-                < Stack.Screen name={moduleNames.VIDEO_DETAILS} component={VideoDetails} />
+                < Stack.Screen
+                    name={moduleNames.VIDEO_DETAILS}
+                    component={VideoDetails}
+                    options={{
+                        orientation: Platform.OS === 'ios' ? 'all' : 'portrait'
+                    }}
+                />
             </Stack.Navigator>
 
         </NavigationContainer>

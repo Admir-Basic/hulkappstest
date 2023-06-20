@@ -12,10 +12,10 @@ import VideoSettings from '../../constantsConfiguration/videoSettings';
 // ===================================================================
 import { SkeletonLoader, CustomIcon } from 'components'
 
-const VideoInfo = ({ navigation, item, isLoading, }) => {
+const VideoInfo = ({ navigation, item, isLoading, openVideo }) => {
 
   return (
-    <TouchableOpacity disabled={isLoading} onPress={() => { navigation.push(moduleNames.VIDEO_DETAILS, { item }) }} style={{ width: '100%', height: VideoSettings.VIDEO_INFO_HEIGHT, marginTop: 5, borderRadius: 5, overflow: 'hidden', backgroundColor: ColorsPalett.cardBackgroundInner }}>
+    <TouchableOpacity disabled={isLoading} onPress={() => { openVideo(item) }} /* onPress={() => { navigation.push(moduleNames.VIDEO_DETAILS, { item }) }} */ style={{ width: '100%', height: VideoSettings.VIDEO_INFO_HEIGHT, marginTop: 5, borderRadius: 5, overflow: 'hidden', backgroundColor: ColorsPalett.cardBackgroundInner }}>
 
       <View style={{ width: '100%', height: '100%', flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 5, paddingVertical: 5, }}>
         <View style={{ width: 70, height: '100%', justifyContent: 'center', alignItems: 'center', }} >
