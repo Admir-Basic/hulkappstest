@@ -195,14 +195,9 @@ const Home = ({ navigation }) => {
 
       <View onLayout={onLayout} style={{ width: '100%', flex: 1 }} >
 
-        <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: 0 }}>
-          <View style={{ width: '100%', height: 2, backgroundColor: 'red', marginTop: -1 }} />
-        </View>
-
         <FlashList
           scrollEnabled={!isLoading}
           estimatedItemSize={VideoSettings.VIDEO_HEIGHT}
-          // onScroll={handleScroll}
           onScrollEndDrag={handleScroll}
           data={list || defaultData}
           initialNumToRender={5}
