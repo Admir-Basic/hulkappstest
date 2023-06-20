@@ -70,7 +70,7 @@ function AppNavigator(props) {
 
     return (
         <NavigationContainer
-            // theme={navTheme}
+            theme={navTheme}
         >
             <Stack.Navigator
                 screenOptions={({ route, navigation, }) => {

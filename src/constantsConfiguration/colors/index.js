@@ -1,5 +1,5 @@
 const colorsPalett = {
-    mainBackground: '#131217;',
+    mainBackground: '#131217',
     cardBackground: '#1C1C24',
     cardBackgroundInner: '#2c2c3a',
     cardBackgroundIcon: '#343444',
