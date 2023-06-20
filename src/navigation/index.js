@@ -72,16 +72,18 @@ function AppNavigator(props) {
             theme={navTheme}
         >
             <Stack.Navigator
-                screenOptions={({ route, navigation, }) => ({
+                screenOptions={({ route, navigation, }) => {
+                    console.log('route ', JSON.stringify(route, null, 2))
+                    return ({
                     headerShown: false,
-                    orientation: 'portrait',
+                    orientation: route.name === moduleNames.HOME ? 'portrait' : 'all',
                     gestureEnabled: false,
                     animation: 'slide_from_left',
-                })}
+                })}}
             >
-                < Stack.Screen name={'Share'} component={ShareNavigator} />
-                {/* < Stack.Screen name={moduleNames.HOME} component={Home} /> */}
-                {/* < Stack.Screen name={moduleNames.VIDEO_DETAILS} component={VideoDetails} /> */}
+                {/* < Stack.Screen name={'Share'} component={ShareNavigator} /> */}
+                < Stack.Screen name={moduleNames.HOME} component={Home} />
+                < Stack.Screen name={moduleNames.VIDEO_DETAILS} component={VideoDetails} />
             </Stack.Navigator>
 
         </NavigationContainer>

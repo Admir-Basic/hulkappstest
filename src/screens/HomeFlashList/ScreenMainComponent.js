@@ -196,7 +196,7 @@ const Home = ({ navigation }) => {
 
       <View onLayout={onLayout} style={{ width: '100%', flex: 1 }} >
 
-        <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: -1 }}>
+        <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: 0 }}>
           <View style={{ width: '100%', height: 2, backgroundColor: 'red', marginTop: -1 }} />
         </View>
 
@@ -217,7 +217,7 @@ const Home = ({ navigation }) => {
             if (callOnScrollEnd.current && list && list.length > 0 && !endReached && list.length < allList.current.length && !isLoading) onEndReachedFatch(allList.current, list, list.length)
             callOnScrollEnd.current = false
 
-            // handleScroll(e)
+            handleScroll(e)
           }}
           onEndReachedThreshold={0.5}
 

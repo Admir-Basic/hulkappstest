@@ -86,14 +86,14 @@ const VideoDetails = ({ route, navigation }) => {
       />
 
       <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
-        <TouchableOpacity onPress={handlebackButton} style={{ width: 60, height: 60, justifyContent: 'center', alignItems: 'center', }} >
+        <TouchableOpacity /*onPress={handlebackButton}*/ onPress={() => { setFullScreen(!fullScreen)}} style={{ width: 60, height: 60, justifyContent: 'center', alignItems: 'center', }} >
           <CustomIcon type={'Entypo'} name={'chevron-left'} color={ColorsPalett.textColorMain} style={{ fontSize: 28, }} />
         </TouchableOpacity>
       </View>
 
       <View style={{ width: '100%', flex: 1, backgroundColor: ColorsPalett.mainBackground, paddingHorizontal: fullScreen ? 0 : 5 }} >
         <View style={{ width: '100%', height: fullScreen ? '100%' : VideoSettings.VIDEO_HEIGHT }} >
-          <SharedElement id={`item.${item.thumb}`}>
+          {/* <SharedElement id={`item.${item.thumb}`}> */}
             <View style={{ width: '100%', height: fullScreen ? '100%' : VideoSettings.VIDEO_HEIGHT - 10, padding: fullScreen ? 0 : 5, justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackground, borderRadius: fullScreen ? 0 : 5 }} >
               <View style={{ width: '100%', flex: 1, borderRadius: 5, overflow: 'hidden' }}>
                 <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackgroundInner }}>
@@ -102,7 +102,6 @@ const VideoDetails = ({ route, navigation }) => {
                       // fullscreen={fullScreen}
                       source={{ uri: `${item.sources}` }}
                       poster={`${VideoSettings.SOURCE}/${item.thumb}`}
-                      posterResizeMode="cover"
                       ref={player}
                       onBuffer={onBuffer}
                       onError={videoError}
@@ -113,6 +112,10 @@ const VideoDetails = ({ route, navigation }) => {
                       showOnStart={true}
                       doubleTapTime={300}
 
+                      posterResizeMode={fullScreen ? "cover" : "contain"}
+                      resizeMode={fullScreen ? "cover" : "contain"}
+                      isFullscreen={fullScreen}
+
                       onProgress={onProgress}
 
                       onLoad={() => {
@@ -120,13 +123,13 @@ const VideoDetails = ({ route, navigation }) => {
                       }}
 
                       onEnterFullscreen={() => {
-                        // console.log('usao')
-                        toggleFullScreen(true)
+                        console.log('usao onEnterFullscreen')
+                        // toggleFullScreen(true)
                       }}
 
                       onExitFullscreen={() => {
-                        // console.log('usao')
-                        toggleFullScreen(false)
+                        console.log('usao onExitFullscreen')
+                        // toggleFullScreen(false)
                       }}
 
                       onPlay={onPlay}
@@ -179,7 +182,7 @@ const VideoDetails = ({ route, navigation }) => {
                 </View>
               }
             </View>
-          </SharedElement>
+          {/* </SharedElement> */}
         </View>
 
         {!fullScreen &&

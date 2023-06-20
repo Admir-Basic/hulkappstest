@@ -99,9 +99,11 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
   useEffect(() => {
     if (item?.sources && !isLoading) {
       let url = item.sources;
-      convertAsync(url).then((res) => { setCashedVideo(res); })
+      convertAsync(url).then((res) => { if (index === 1) console.log({res}); setCashedVideo(res); })
     }
   }, [isLoading])
+
+  if (index === 1) console.log('url ======== ', offlineMode && cashedVideo ? cashedVideo : item?.sources ? item.sources : null)
 
   return (
     <View style={{ width: '100%', flex: 1, borderRadius: 5, overflow: 'hidden' }}>

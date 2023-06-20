@@ -46,7 +46,7 @@ const Search = ({ debounceTime = 400, onSubmitSearch, resetSearch = false }) => 
         underlineColorAndroid='transparent'
         placeholder={'Search'}
         placeholderTextColor={ColorsPalett.placeholder}
-        style={{ fontSize: 14, color: ColorsPalett.textColorMain, backgroundColor: ColorsPalett.searchBackground, width: '100%', paddingHorizontal: 10 }}
+        style={{ fontSize: 14, color: ColorsPalett.textColorMain, backgroundColor: ColorsPalett.searchBackground, height: '100%', textAlignVertical: 'center', width: '100%', paddingHorizontal: 10 }}
         value={searchText}
         onChangeText={onChangeText}
         selectionColor={ColorsPalett.selectionColor}
