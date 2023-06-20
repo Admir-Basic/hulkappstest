@@ -1,9 +1,9 @@
 const colorsPalett = {
-    mainBackground: '#000000',
-    cardBackground: '#242424',
-    cardBackgroundInner: '#1D1D1D',
-    cardBackgroundIcon: '#2E2E2E',
-    headerBackground: '#1e1e1e',
+    mainBackground: '#131217;',
+    cardBackground: '#1C1C24',
+    cardBackgroundInner: '#2c2c3a',
+    cardBackgroundIcon: '#343444',
+    headerBackground: '#252538',
     searchBackground: '#FFFFFF10',
 
     textColorMain: '#e6e6e6',

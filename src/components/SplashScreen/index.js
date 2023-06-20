@@ -80,7 +80,7 @@ export const Splash = ({ isAppReady }) => {
         >
             <StatusBar
                 animated={true}
-                backgroundColor={'#000000'}
+                backgroundColor={'#131217'}
                 barStyle={"light-content"}
             />
 
@@ -101,7 +101,7 @@ export const Splash = ({ isAppReady }) => {
 const style = StyleSheet.create({
     container: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: '#000000',
+        backgroundColor: '#131217',
         alignItems: "center",
         justifyContent: "center",
     },
