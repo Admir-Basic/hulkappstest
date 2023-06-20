@@ -76,8 +76,8 @@ const VideoPlayerComponent = ({ item, videoProgressLocal = 0, fullScreen, orient
           onError={videoError}
           videoStyle={{ width: '100%', height: fullScreen || orientation === 'landscape' ? '100%' : VideoSettings.VIDEO_HEIGHT - 25 - VideoSettings.VIDEO_INFO_HEIGHT }}
           paused={false}
-          toggleResizeModeOnFullscreen={true}
-          tapAnywhereToPause={false}
+          toggleResizeModeOnFullscreen={false}
+          tapAnywhereToPause={true}
           showOnStart={true}
           doubleTapTime={300}
 
