@@ -2,9 +2,10 @@
 // Libraries
 // ===================================================================
 import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
-import { View, StatusBar, BackHandler, Platform } from 'react-native';
+import { View, StatusBar, BackHandler, Platform, Dimensions } from 'react-native';
 import Orientation from 'react-native-orientation-locker';
 import { useDeviceOrientation } from '@react-native-community/hooks'
+import ImmersiveMode from 'react-native-immersive-mode';
 // ===================================================================
 // Constants
 // ===================================================================
@@ -47,13 +48,28 @@ const VideoDetails = ({ route, navigation }) => {
     setFullScreen(status)
   }
 
+  useEffect(() => {
+    if (orientation == 'landscape' || fullScreen) {
+      ImmersiveMode.setBarMode('BottomSticky');
+      ImmersiveMode.setBarTranslucent(true);
+    }
+    else {
+      ImmersiveMode.setBarMode('Normal');
+      ImmersiveMode.setBarTranslucent(false);
+    }
+
+    return () => {
+      ImmersiveMode.setBarMode('Normal');
+      ImmersiveMode.setBarTranslucent(false);
+    }
+  }, [orientation, fullScreen]);
 
   return (
     <View style={{ width: '100%', flex: 1, backgroundColor: ColorsPalett.mainBackground, }} >
 
       <StatusBar
         animated={true}
-        backgroundColor={'#00000000'}
+        backgroundColor={ColorsPalett.mainBackground}
         barStyle={"light-content"}
         translucent={fullScreen || orientation === 'landscape' ? true : false}
         hidden={fullScreen || orientation === 'landscape' ? true : false}
@@ -66,7 +82,7 @@ const VideoDetails = ({ route, navigation }) => {
       />
 
       {item &&
-        <View style={{ width: '100%', flex: 1, backgroundColor: ColorsPalett.mainBackground, paddingHorizontal: fullScreen || orientation === 'landscape' ? 0 : 5 }} >
+        <View style={{ width: '100%', flex: 1, paddingHorizontal: fullScreen || orientation === 'landscape' ? 0 : 5, }} >
           <View style={{ width: '100%', height: fullScreen || orientation === 'landscape' ? '100%' : VideoSettings.VIDEO_HEIGHT }} >
             <View style={{ width: '100%', height: fullScreen || orientation === 'landscape' ? '100%' : VideoSettings.VIDEO_HEIGHT - 10, padding: fullScreen || orientation === 'landscape' ? 0 : 5, justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackground, borderRadius: fullScreen ? 0 : 5 }} >
 
