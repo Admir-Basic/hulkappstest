@@ -9,8 +9,6 @@ const HulAppsTestApi = {
     getVideos: () => {
         var requestUrl = `${urlGetVideos}`;
 
-        console.log('requestUrl ', requestUrl)
-
         return axios.get(requestUrl)
             .then(res => res)
             .catch(err => err);
