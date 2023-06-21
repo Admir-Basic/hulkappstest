@@ -1,4 +1,4 @@
-import React, { Component, memo } from 'react';
+import React, { Component } from 'react';
 import { BackHandler } from 'react-native';
 // =================================================================== 
 // Components
@@ -40,8 +40,6 @@ class ScreenMainContainer extends Component {
   }
 
   handleBackButtonClick = () => {
-    this.props.navigation.replace(moduleNames.HOME)
-
     return true;
   }
 
@@ -68,4 +66,4 @@ class ScreenMainContainer extends Component {
 };
 
 
-export default memo(ScreenMainContainer);
+export default ScreenMainContainer;

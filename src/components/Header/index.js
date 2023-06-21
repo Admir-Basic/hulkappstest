@@ -2,30 +2,24 @@
 // Libraries
 // ===================================================================
 import React, { memo } from 'react';
-import { View, Text, Dimensions, StatusBar } from 'react-native';
-import { } from 'react-native-gesture-handler';
-import { Switch } from 'react-native-paper';
-import { SharedElement } from 'react-navigation-shared-element';
-//=================================================================== 
-// Redux
-// ===================================================================
-import { useDispatch, useSelector } from 'react-redux';
-import { selectNetInfo, selectOfflineMode, setOfflineMode } from 'reduxConfiguration/slices/netInfoSlice';
-// ===================================================================
+import { View, Text, Dimensions, StatusBar, StyleSheet } from 'react-native';
+//====================================================================
 // Constants
 // ===================================================================
 import ColorsPalett from 'constantsConfiguration/colors';
 // ===================================================================
-
+// Components
+// ===================================================================
 import Search from './Search'
+import SwitchMode from './SwitchMode'
+// ===================================================================
+
 
 const Header = ({ onSubmitSearch, displaySearch = false, displayMode = false, headerText = null, resetSearch = false, }) => {
   // ===================================================================
-  // Redux Props
+  // Style
   // -------------------------------------------------------------------
-  const dispatch = useDispatch()
-  const netInfo = useSelector(selectNetInfo)
-  const offlineMode = useSelector(selectOfflineMode)
+  const { container, containerInner, titleText } = style
   // ===================================================================
 
   return (
@@ -38,30 +32,49 @@ const Header = ({ onSubmitSearch, displaySearch = false, displayMode = false, he
         hidden={false}
       />
 
-      <View style={{ width: '100%', height: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: ColorsPalett.headerBackground }} >
-        <SharedElement id={`header`} >
-          <View style={{ width: Dimensions.get('screen').width, height: 60, padding: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: ColorsPalett.headerBackground }} >
-            {displaySearch &&
-              < Search
-                onSubmitSearch={onSubmitSearch}
-                resetSearch={resetSearch}
-              />
-            }
+      <View style={container} >
+        <View style={containerInner} >
+          {displaySearch &&
+            < Search
+              onSubmitSearch={onSubmitSearch}
+              resetSearch={resetSearch}
+            />
+          }
 
-            {displayMode &&
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 10, color: ColorsPalett.textColorSecond, marginRight: 5, textAlign: 'right' }} >{'Offline\nmode'}:</Text>
-                <Switch disabled={!netInfo ? true : false} value={!netInfo ? true : offlineMode} onValueChange={(val) => { dispatch(setOfflineMode(val)) }} />
-              </View>
-            }
+          {displayMode &&
+            <SwitchMode />
+          }
 
-            {headerText && <Text style={{ fontSize: 14, color: ColorsPalett.textColorMain, }} >{headerText}</Text>}
+          {headerText && <Text style={titleText} >{headerText}</Text>}
 
-          </View>
-        </SharedElement>
+        </View>
       </View>
     </>
   );
 }
+
+const style = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: ColorsPalett.headerBackground
+  },
+  containerInner: {
+    width: Dimensions.get('screen').width,
+    height: 60,
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: ColorsPalett.headerBackground
+  },
+  titleText: {
+    fontSize: 14,
+    color: ColorsPalett.textColorMain,
+  },
+});
 
 export default memo(Header);

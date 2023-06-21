@@ -2,34 +2,39 @@
 // =================================================================== 
 // Libraries
 // ===================================================================
-import React, { useEffect, memo, useMemo, useState, useRef } from "react";
+import React, { useEffect, memo, } from "react";
+import { StyleSheet } from "react-native";
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    Extrapolate,
+    interpolate,
+    withTiming,
+    withRepeat,
+    Easing,
+} from 'react-native-reanimated';
 // ===================================================================
 // Constants
 // ===================================================================
 import ColorsPalett from 'constantsConfiguration/colors';
 // ===================================================================
-import Animated, {
-    Value,
-    EasingNode,
-    interpolateNode,
-    useSharedValue,
-    useAnimatedScrollHandler,
-    useAnimatedStyle,
-    useDerivedValue,
-    Extrapolate,
-    interpolate,
-    concat,
-    degrees,
-    withTiming,
-    withRepeat,
-    cancelAnimation,
-    Easing,
-    useAnimatedProps,
-} from 'react-native-reanimated';
 
 const Loader = ({ customBackground = null, displaySkeletonLoader, }) => {
-    const opacityAnimation = useSharedValue(1);
+    // ===================================================================
+    // Style
+    // -------------------------------------------------------------------
+    const { container } = style
+    // ===================================================================
 
+    // ===================================================================
+    // Variables
+    // -------------------------------------------------------------------
+    const opacityAnimation = useSharedValue(1);
+    // ===================================================================
+
+    // ===================================================================
+    // useEffect
+    // -------------------------------------------------------------------
     useEffect(() => {
         opacityAnimation.value = withRepeat(
             withTiming(0, {
@@ -39,9 +44,12 @@ const Loader = ({ customBackground = null, displaySkeletonLoader, }) => {
             -1,
             true
         )
-
     }, [])
+    // ===================================================================
 
+    // ===================================================================
+    // Animations
+    // -------------------------------------------------------------------
     const animatedStyles = useAnimatedStyle(() => {
         const opacity = interpolate(opacityAnimation.value, [0, 1], [0.5, 0.9], {
             extrapolateLeft: Extrapolate.EXTEND,
@@ -52,15 +60,23 @@ const Loader = ({ customBackground = null, displaySkeletonLoader, }) => {
             opacity: opacity,
         };
     });
+    // ===================================================================
+
     return (
         <Animated.View
-            style={[{
-                width: '100%',
-                height: '100%',
+            style={[container, {
                 backgroundColor: customBackground ? customBackground : ColorsPalett.skeletonLoader,
             }, animatedStyles]}
         >
         </Animated.View>
     );
 };
+
+const style = StyleSheet.create({
+    container: {
+        width: '100%',
+        height: '100%',
+    },
+});
+
 export default memo(Loader);

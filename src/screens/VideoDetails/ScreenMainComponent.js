@@ -2,7 +2,7 @@
 // Libraries
 // ===================================================================
 import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
-import { View, StatusBar, BackHandler, Platform, Dimensions } from 'react-native';
+import { View, StatusBar, BackHandler, Platform, StyleSheet } from 'react-native';
 import Orientation from 'react-native-orientation-locker';
 import { useDeviceOrientation } from '@react-native-community/hooks'
 import ImmersiveMode from 'react-native-immersive-mode';
@@ -12,24 +12,67 @@ import ImmersiveMode from 'react-native-immersive-mode';
 import VideoSettings from 'constantsConfiguration/videoSettings';
 import ColorsPalett from 'constantsConfiguration/colors';
 // ===================================================================
-
+// Components
+// ===================================================================
 import TopButtons from './TopButtons'
 import Title from './Title'
 import Description from './Description'
 import VideoPlayer from './VideoPlayer'
+// ===================================================================
 
 const VideoDetails = ({ route, navigation }) => {
+  // ===================================================================
+  // Params
+  // -------------------------------------------------------------------
   const { item, progress } = route.params;
+  // ===================================================================
 
+  // ===================================================================
+  // Style
+  // -------------------------------------------------------------------
+  const { mainContainer } = style
+  // ===================================================================
+
+  // ===================================================================
+  // Listener
+  // -------------------------------------------------------------------
   const orientation = useDeviceOrientation()
+  // ===================================================================
 
+  // ===================================================================
+  // State
+  // -------------------------------------------------------------------
   const [fullScreen, setFullScreen] = useState(false)
+  // ===================================================================
 
+  // ===================================================================
+  // useEffect
+  // -------------------------------------------------------------------
   useEffect(() => {
     const backHandler = BackHandler.addEventListener("hardwareBackPress", handlebackButton);
     return () => backHandler.remove();
   }, [fullScreen]);
 
+  useEffect(() => {
+    if (orientation == 'landscape' || fullScreen) {
+      ImmersiveMode.setBarMode('BottomSticky');
+      ImmersiveMode.setBarTranslucent(true);
+    }
+    else {
+      ImmersiveMode.setBarMode('Normal');
+      ImmersiveMode.setBarTranslucent(false);
+    }
+
+    return () => {
+      ImmersiveMode.setBarMode('Normal');
+      ImmersiveMode.setBarTranslucent(false);
+    }
+  }, [orientation, fullScreen]);
+  // ===================================================================
+
+  // ===================================================================
+  // Methods
+  // -------------------------------------------------------------------
   const handlebackButton = useCallback(() => {
     if (fullScreen) toggleFullScreen(false)
     else navigation.goBack();
@@ -47,25 +90,10 @@ const VideoDetails = ({ route, navigation }) => {
     }
     setFullScreen(status)
   }
-
-  useEffect(() => {
-    if (orientation == 'landscape' || fullScreen) {
-      ImmersiveMode.setBarMode('BottomSticky');
-      ImmersiveMode.setBarTranslucent(true);
-    }
-    else {
-      ImmersiveMode.setBarMode('Normal');
-      ImmersiveMode.setBarTranslucent(false);
-    }
-
-    return () => {
-      ImmersiveMode.setBarMode('Normal');
-      ImmersiveMode.setBarTranslucent(false);
-    }
-  }, [orientation, fullScreen]);
+  // ===================================================================
 
   return (
-    <View style={{ width: '100%', flex: 1, backgroundColor: ColorsPalett.mainBackground, }} >
+    <View style={mainContainer} >
 
       <StatusBar
         animated={true}
@@ -93,7 +121,6 @@ const VideoDetails = ({ route, navigation }) => {
                 orientation={orientation}
               />
 
-
               {!fullScreen && orientation != 'landscape' &&
                 <Title
                   item={item}
@@ -113,5 +140,13 @@ const VideoDetails = ({ route, navigation }) => {
     </View>
   );
 }
+
+const style = StyleSheet.create({
+  mainContainer: {
+    width: '100%',
+    flex: 1,
+    backgroundColor: ColorsPalett.mainBackground,
+  },
+});
 
 export default memo(VideoDetails);

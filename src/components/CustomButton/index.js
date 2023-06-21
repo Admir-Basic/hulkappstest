@@ -1,8 +1,8 @@
 // =================================================================== 
 // Libraries
 // ===================================================================
-import React, { memo, useState, useEffect, useCallback } from 'react'
-import { Pressable, View, Text, Platform, Animated, Easing } from 'react-native'
+import React, { memo, } from 'react'
+import { Pressable, View, Text, Platform, StyleSheet } from 'react-native'
 // =================================================================== 
 // Components
 // ===================================================================
@@ -13,27 +13,50 @@ import { CustomIcon, } from 'components';
 import ColorsPalett from 'constantsConfiguration/colors';
 // ===================================================================
 
-
-const CustomButton = ({ containerStyle = {}, text, textStyle = {}, icon, onPress, disabled = false, pressableBackground, reverse = false, animateLoading = false }) => {
+const CustomButton = ({ containerStyle = {}, text, textStyle = {}, icon, onPress, disabled = false, pressableBackground, reverse = false, }) => {
+    // ===================================================================
+    // Style
+    // -------------------------------------------------------------------
+    const { container, pressableContainer, buttonText, } = style
+    // ===================================================================
 
     return (
-        <View style={{ width: '100%', height: 60, overflow: 'hidden', borderRadius: 10, ...containerStyle }}>
+        <View style={[container, containerStyle]}>
             <Pressable
                 disabled={disabled}
                 android_ripple={{ color: pressableBackground ? pressableBackground : ColorsPalett.rippleColor, }}
                 onPress={() => { onPress() }}
-                style={({ pressed }) => [{ backgroundColor: pressed && Platform.OS === 'ios' ? ColorsPalett.rippleColor : 'transparent', justifyContent: 'center', alignItems: 'center', flexDirection: reverse ? 'row-reverse' : 'row', width: '100%', height: '100%' }]}
+                style={({ pressed }) => [pressableContainer, { backgroundColor: pressed && Platform.OS === 'ios' ? ColorsPalett.rippleColor : 'transparent', flexDirection: reverse ? 'row-reverse' : 'row', }]}
             >
                 {icon ?
-                    <View style={{}}>
+                    <View>
                         <CustomIcon type={icon.type} name={icon.name} color={ColorsPalett.textColorMain} style={{ fontSize: icon.iconSize, marginRight: reverse ? 0 : 10, marginLeft: reverse ? 10 : 0, ...icon.iconStyle }} />
                     </View>
                     : <View />
                 }
-                <Text style={{ fontSize: 16, color: ColorsPalett.textColorMain, ...textStyle }}>{text}</Text>
+                <Text style={[buttonText, textStyle]}>{text}</Text>
             </Pressable>
         </View>
     )
 }
+
+const style = StyleSheet.create({
+    container: {
+        width: '100%',
+        height: 60,
+        overflow: 'hidden',
+        borderRadius: 10,
+    },
+    pressableContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%'
+    },
+    buttonText: {
+        fontSize: 16,
+        color: ColorsPalett.textColorMain,
+    },
+});
 
 export default memo(CustomButton);

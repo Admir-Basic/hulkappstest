@@ -1,4 +1,4 @@
-import React, { Component, memo } from 'react';
+import React, { Component } from 'react';
 import { BackHandler } from 'react-native';
 // =================================================================== 
 // Components
@@ -8,8 +8,6 @@ import { ErrorBoundary } from 'components';
 // Local Components
 // ===================================================================
 import ScreenMainComponent from './ScreenMainComponent';
-
-import { moduleNames } from 'constantsConfiguration/enums/modules';
 
 class ScreenMainContainer extends Component {
 
@@ -35,12 +33,10 @@ class ScreenMainContainer extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // deal with errorInfo if needed
   }
 
   handleBackButtonClick = () => {
     const { goBack } = this.props.navigation;
-    // this.props.navigation.replace(moduleNames.HOME)
     goBack()
 
     return true;
@@ -69,4 +65,4 @@ class ScreenMainContainer extends Component {
 };
 
 
-export default memo(ScreenMainContainer);
+export default ScreenMainContainer;

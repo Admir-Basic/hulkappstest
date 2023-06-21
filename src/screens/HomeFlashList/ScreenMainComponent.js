@@ -1,8 +1,8 @@
 // =================================================================== 
 // Libraries
 // ===================================================================
-import React, { useState, useCallback, useEffect, useRef, useReducer, memo } from 'react';
-import { SafeAreaView, FlatList, View, Text, RefreshControl, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, Dimensions } from 'react-native';
+import React, { useCallback, useEffect, useRef, useReducer, memo } from 'react';
+import { View, Text, RefreshControl, StyleSheet } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 // ===================================================================
 // Redux
@@ -20,7 +20,10 @@ import { ListSingleVideo, Header } from 'components';
 import VideoSettings from 'constantsConfiguration/videoSettings';
 import ColorsPalett from 'constantsConfiguration/colors';
 // ===================================================================
+// Api
+// ===================================================================
 import ApiApp from 'services/AppAPI'
+// ===================================================================
 
 const initialState = {
   isLoading: true,
@@ -56,29 +59,42 @@ const Home = ({ navigation }) => {
   const videosProgress = useSelector(selectVideosProgress)
   // ===================================================================
 
+  // ===================================================================
+  // Style
+  // -------------------------------------------------------------------
+  const { mainContainer, container, falselashListContainer, footerContainer, footerText, listEmptyContainer, listEmptyText } = style
+  // ===================================================================
+
+  // ===================================================================
+  // Reducer
+  // -------------------------------------------------------------------
   const [state, dispatch] = useReducer(reducer, initialState)
   const { isLoading, list, refresh, searchText, focusedIndex, endReached } = state;
+  // ===================================================================
 
+  // ===================================================================
+  // Ref
+  // -------------------------------------------------------------------
   const allList = useRef(null);
   const originalList = useRef(null);
   const listHeight = useRef(0);
   const callOnScrollEnd = useRef(false)
+  // ===================================================================
 
+  // ===================================================================
+  // useEffect
+  // -------------------------------------------------------------------
   useEffect(() => {
     getData()
   }, [])
+  // ===================================================================
 
-  /* useEffect(() => {
-    if (list) {
-      let index = calculateOffset(0, listHeight.current, list)
-      dispatch({ type: 'setFocusedIndex', payload: index })
-    }
-    // setFocusedIndex(calculateOffset(0, listHeight.current, list))
-  }, [list, listHeight]) */
-
+  // ===================================================================
+  // Methods
+  // -------------------------------------------------------------------
   const getData = useCallback((fromRefresh = false) => {
 
-    if (netInfo /* && 1 > 2 */) {
+    if (netInfo) {
       ApiApp.getVideos()
         .then((res) => {
           if (res?.status == 200 && res?.data.videos) {
@@ -101,9 +117,7 @@ const Home = ({ navigation }) => {
     }
   }, [])
 
-  const onEndReachedFatch = useCallback((allListA, listA, nextIndex) => {
-    updateList(false, allListA, listA, nextIndex)
-  }, [])
+  // -------------------------------------------------------------------
 
   const updateList = useCallback((first = false, list, displayedList, nextIndex, searchText = null) => {
     if (nextIndex >= list.length) {
@@ -133,6 +147,14 @@ const Home = ({ navigation }) => {
     }
   }, [state])
 
+  // -------------------------------------------------------------------
+
+  const onEndReachedFatch = useCallback((allListA, listA, nextIndex) => {
+    updateList(false, allListA, listA, nextIndex)
+  }, [])
+
+  // -------------------------------------------------------------------
+
   const onSubmitSearch = useCallback((text) => {
     let newList = [];
 
@@ -149,12 +171,16 @@ const Home = ({ navigation }) => {
     updateList(false, newList, null, 0, text)
   }, [originalList])
 
+  // -------------------------------------------------------------------
+
   const onRefresh = useCallback(() => {
 
     dispatch({ type: 'toggleRefresh', payload: {} })
     setTimeout(() => { getData(true) }, 50)
 
   }, [])
+
+  // -------------------------------------------------------------------
 
   const handleScroll = useCallback((e) => {
     let index = calculateOffset(e.nativeEvent.contentOffset.y, e.nativeEvent.layoutMeasurement.height, list);
@@ -164,13 +190,16 @@ const Home = ({ navigation }) => {
 
   }, [list, focusedIndex]);
 
+  // -------------------------------------------------------------------
+
   const onLayout = (event) => {
     const { x, y, height, width } = event.nativeEvent.layout;
     listHeight.current = height;
   }
 
+  // -------------------------------------------------------------------
+
   const calculateOffset = useCallback((position, height, listA) => {
-    // let offset = position < VideoSettings.VIDEO_HEIGHT * 1.4 ? 0.66 : 1
     let offset = 0.6
 
     let middle = (height / 2) - (VideoSettings.VIDEO_HEIGHT * offset);
@@ -180,12 +209,15 @@ const Home = ({ navigation }) => {
 
   }, []);
 
+  // -------------------------------------------------------------------
+
   const changeFocusedIndex = useCallback((index) => {
     dispatch({ type: 'setFocusedIndex', payload: index })
   }, [])
+  // ===================================================================
 
   return (
-    <View style={{ flex: 1, backgroundColor: ColorsPalett.mainBackground }}>
+    <View style={mainContainer}>
       <Header
         displaySearch
         displayMode
@@ -193,15 +225,14 @@ const Home = ({ navigation }) => {
         resetSearch={refresh}
       />
 
-      <View onLayout={onLayout} style={{ width: '100%', flex: 1 }} >
+      <View onLayout={onLayout} style={container} >
 
         <FlashList
           scrollEnabled={!isLoading}
           estimatedItemSize={VideoSettings.VIDEO_HEIGHT}
           onScrollEndDrag={handleScroll}
           data={list || defaultData}
-          initialNumToRender={5}
-          contentContainerStyle={{ paddingBottom: 20, }}
+          contentContainerStyle={falselashListContainer}
           keyExtractor={(item, index) => {
             return `${item?.thumb}${index}item` || `${index}item`;
           }}
@@ -241,9 +272,9 @@ const Home = ({ navigation }) => {
           }
 
           ListFooterComponent={() => {
-            if (endReached) return (
-              <View style={{ width: '100%', height: 50, justifyContent: 'center', alignItems: 'center' }} >
-                <Text style={{ fontSize: 12, color: '#FFFFFF' }} >End reached</Text>
+            if (endReached && list && list.length > 0) return (
+              <View style={footerContainer} >
+                <Text style={footerText} >End reached</Text>
               </View>
             )
             return null
@@ -251,8 +282,8 @@ const Home = ({ navigation }) => {
 
           ListEmptyComponent={() =>
             list !== null ? (
-              <View style={{ width: '100%', height: 60, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 16, color: '#FFFFFF' }} >Empty list</Text>
+              <View style={listEmptyContainer}>
+                <Text style={listEmptyText} >Empty list</Text>
               </View>
             ) : null}
         />
@@ -260,5 +291,39 @@ const Home = ({ navigation }) => {
     </View >
   );
 }
+
+const style = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: ColorsPalett.mainBackground
+  },
+  container: {
+    width: '100%',
+    flex: 1
+  },
+  falselashListContainer: {
+    paddingBottom: 20,
+  },
+  footerContainer: {
+    width: '100%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  footerText: {
+    fontSize: 12,
+    color: ColorsPalett.textColorMain
+  },
+  listEmptyContainer: {
+    width: '100%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  listEmptyText: {
+    fontSize: 12,
+    color: ColorsPalett.textColorMain
+  },
+});
 
 export default memo(Home);

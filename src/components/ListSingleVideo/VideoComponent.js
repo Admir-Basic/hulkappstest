@@ -2,11 +2,8 @@
 // Libraries
 // ===================================================================
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { SafeAreaView, FlatList, View, Text, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, Dimensions, TouchableOpacity } from 'react-native';
-import Video from 'react-native-video';
+import { View, Dimensions, StyleSheet } from 'react-native';
 import VideoPlayer from 'react-native-video-controls';
-
-import { SharedElement } from 'react-navigation-shared-element';
 import convertToCache, { convertAsync } from "react-native-video-cache";
 // ===================================================================
 // Redux
@@ -15,15 +12,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setVideoProgress } from 'reduxConfiguration/slices/videosSlice';
 import { selectOfflineMode } from 'reduxConfiguration/slices/netInfoSlice';
 // ===================================================================
-
-// ===================================================================
 // Constants
 // ===================================================================
 import ColorsPalett from 'constantsConfiguration/colors';
-import { moduleNames } from '../../constantsConfiguration/enums/modules';
 import VideoSettings from '../../constantsConfiguration/videoSettings';
 // ===================================================================
-import { SkeletonLoader, CustomIcon } from 'components'
+// Components
+// ===================================================================
+import { SkeletonLoader } from 'components'
+// ===================================================================
 
 const VideoComponent = ({ index, item, focused = false, isLoading, changeFocusedIndex, videoProgressLocal, updateLocalProgress }) => {
   // ===================================================================
@@ -33,16 +30,44 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
   const offlineMode = useSelector(selectOfflineMode)
   // ===================================================================
 
-  const player = useRef(null)
+  // ===================================================================
+  // Style
+  // -------------------------------------------------------------------
+  const { container, containerInner, skeletonLoaderStyle, videoStyle } = style
+  // ===================================================================
 
+  // ===================================================================
+  // State
+  // -------------------------------------------------------------------
   const [cashedVideo, setCashedVideo] = useState(null)
+  // ===================================================================
 
-  const onBuffer = (buffer) => {
-  }
+  // ===================================================================
+  // Ref
+  // -------------------------------------------------------------------
+  const player = useRef(null)
+  // ===================================================================
 
-  const videoError = (err) => {
-  }
+  // ===================================================================
+  // useEffect
+  // -------------------------------------------------------------------
+  useEffect(() => {
+    if (videoProgressLocal)
+      seekProgress()
 
+  }, [player, videoProgressLocal])
+
+  useEffect(() => {
+    if (item?.sources && !isLoading) {
+      let url = item.sources;
+      convertAsync(url).then((res) => { setCashedVideo(res); })
+    }
+  }, [isLoading])
+  // ===================================================================
+
+  // ===================================================================
+  // Methods
+  // -------------------------------------------------------------------
   const onProgress = (data) => {
     updateLocalProgress(data.currentTime)
 
@@ -54,6 +79,8 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
     ))
   }
 
+  // -------------------------------------------------------------------
+
   const onPlay = () => {
 
     if (!focused) {
@@ -61,9 +88,13 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
     }
   }
 
+  // -------------------------------------------------------------------
+
   const onPause = (data) => {
     changeFocusedIndex(null)
   }
+
+  // -------------------------------------------------------------------
 
   const onEnd = () => {
     player.current.seekTo(0)
@@ -79,12 +110,7 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
     }, 10)
   }
 
-
-  useEffect(() => {
-    if (videoProgressLocal)
-      seekProgress()
-
-  }, [player, videoProgressLocal])
+  // -------------------------------------------------------------------
 
   const seekProgress = useCallback(() => {
     if (player?.current && videoProgressLocal != undefined && videoProgressLocal != null) {
@@ -92,21 +118,15 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
 
     }
   }, [player, videoProgressLocal])
-
-  useEffect(() => {
-    if (item?.sources && !isLoading) {
-      let url = item.sources;
-      convertAsync(url).then((res) => { setCashedVideo(res); })
-    }
-  }, [isLoading])
+  // ===================================================================
 
   return (
-    <View style={{ width: '100%', flex: 1, borderRadius: 5, overflow: 'hidden' }}>
+    <View style={container}>
       <SkeletonLoader
         displaySkeletonLoader={isLoading}
-        customStyleMainContainer={{ width: '100%', height: '100%', }}
+        customStyleMainContainer={skeletonLoaderStyle}
       >
-        <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackgroundInner }}>
+        <View style={containerInner}>
           {item.sources &&
             <VideoPlayer
               source={{ uri: offlineMode && cashedVideo ? cashedVideo : item?.sources ? item.sources : null }}
@@ -115,9 +135,7 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
               resizeMode="cover"
               ref={player}
               repeat={false}
-              onBuffer={onBuffer}
-              onError={videoError}
-              videoStyle={{ width: Dimensions.get('screen').width - 10, height: VideoSettings.VIDEO_HEIGHT - 25 - VideoSettings.VIDEO_INFO_HEIGHT }}
+              videoStyle={videoStyle}
               paused={!focused}
               toggleResizeModeOnFullscreen={false}
               tapAnywhereToPause={true}
@@ -134,18 +152,10 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
               onPause={onPause}
               onEnd={onEnd}
 
-              // disablePlayPause
-              // disableSeekbar
-              // disableTimer
               disableFullscreen
               disableBack
               disableVolume
             />
-
-            /*  : <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', }}>
-               <Text style={{ color: ColorsPalett.textColorMain, fontSize: 16 }} >{item?.thumb}</Text>
-               <Text style={{ color: ColorsPalett.textColorMain, fontSize: 16 }} >{focused ? 'Play' : 'Pause'}</Text>
-             </View> */
           }
 
         </View>
@@ -154,5 +164,29 @@ const VideoComponent = ({ index, item, focused = false, isLoading, changeFocused
     </View>
   );
 }
+
+const style = StyleSheet.create({
+  container: {
+    width: '100%',
+    flex: 1,
+    borderRadius: 5,
+    overflow: 'hidden'
+  },
+  containerInner: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: ColorsPalett.cardBackgroundInner
+  },
+  skeletonLoaderStyle: {
+    width: '100%',
+    height: '100%',
+  },
+  videoStyle: {
+    width: Dimensions.get('screen').width - 10,
+    height: VideoSettings.VIDEO_HEIGHT - 25 - VideoSettings.VIDEO_INFO_HEIGHT
+  }
+});
 
 export default memo(VideoComponent);

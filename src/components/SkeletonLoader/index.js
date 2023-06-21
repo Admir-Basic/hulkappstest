@@ -2,35 +2,26 @@
 // =================================================================== 
 // Libraries
 // ===================================================================
-import { ConstNumbers } from "constantsConfiguration";
-import React, { useEffect, memo, useMemo, useState, useRef } from "react";
-import { View, } from "react-native";
+import React, { memo, } from "react";
+import { View, StyleSheet } from "react-native";
 import Animated, { FadeOut, FadeIn } from 'react-native-reanimated';
 //=================================================================== 
+// Components
+// ===================================================================
 import Loader from './Loader';
+// ===================================================================
 
 const SkeletonLoader = ({ children, customBackground = null, displaySkeletonLoader, customStyleMainContainer, fadeDuration = 500, }) => {
     // ===================================================================
-    // State
+    // Style
     // -------------------------------------------------------------------
+    const { container } = style
     // ===================================================================
-    /* if (displaySkeletonLoader)
-        return (
-            <Animated.View exiting={FadeOut.duration(fadeDuration)} style={customStyleMainContainer ? customStyleMainContainer : { width: '100%', height: '100%', }}>
-                <Loader
-                    customBackground={customBackground}
-                    displaySkeletonLoader={displaySkeletonLoader}
-                />
-            </Animated.View>
-        );
-    return (<Animated.View entering={FadeIn.duration(fadeDuration * 2)} style={customStyleMainContainer ? customStyleMainContainer : { width: '100%', height: '100%', }}>
-        {children}
-    </Animated.View>) */
 
     return (
-        <View style={customStyleMainContainer ? customStyleMainContainer : { width: '100%', height: '100%', }}>
+        <View style={customStyleMainContainer ? customStyleMainContainer : container}>
             {displaySkeletonLoader &&
-                <Animated.View exiting={FadeOut.duration(fadeDuration)} style={{ width: '100%', height: '100%', }}>
+                <Animated.View exiting={FadeOut.duration(fadeDuration)} style={container}>
                     <Loader
                         customBackground={customBackground}
                         displaySkeletonLoader={displaySkeletonLoader}
@@ -38,11 +29,19 @@ const SkeletonLoader = ({ children, customBackground = null, displaySkeletonLoad
                 </Animated.View>
             }
             {!displaySkeletonLoader &&
-                <Animated.View entering={FadeIn.duration(fadeDuration)} style={{ width: '100%', height: '100%', }}>
+                <Animated.View entering={FadeIn.duration(fadeDuration)} style={container}>
                     {children}
                 </Animated.View>
             }
         </View>
     )
 };
+
+const style = StyleSheet.create({
+    container: {
+        width: '100%',
+        height: '100%',
+    },
+});
+
 export default memo(SkeletonLoader);

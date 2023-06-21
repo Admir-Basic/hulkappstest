@@ -2,32 +2,57 @@
 // Libraries
 // ===================================================================
 import React, { memo } from 'react';
-import { View, TouchableOpacity, Platform } from 'react-native';
+import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 // ===================================================================
 // Constants
 // ===================================================================
-import VideoSettings from 'constantsConfiguration/videoSettings';
 import ColorsPalett from 'constantsConfiguration/colors';
 // ===================================================================
 // Components
 // ===================================================================
 import { CustomIcon } from 'components'
-import { moduleNames } from '../../constantsConfiguration/enums/modules';
 // ===================================================================
 
 const TopButtons = ({ handlebackButton, toggleFullScreen, hideFullScreen }) => {
+  // ===================================================================
+  // Style
+  // -------------------------------------------------------------------
+  const { container, button, icon } = style
+  // ===================================================================
 
   return (
-    <View style={{ position: 'absolute', top: 0, left: 10, right: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', zIndex: 99 }}>
-      <TouchableOpacity onPress={handlebackButton} style={{ width: 60, height: 60, justifyContent: 'center', alignItems: 'center', }} >
-        <CustomIcon type={'Entypo'} name={'chevron-left'} color={ColorsPalett.textColorMain} style={{ fontSize: 28, }} />
+    <View style={container}>
+      <TouchableOpacity onPress={handlebackButton} style={button} >
+        <CustomIcon type={'Entypo'} name={'chevron-left'} color={ColorsPalett.textColorMain} style={icon} />
       </TouchableOpacity>
 
-      {Platform.OS === 'android' && !hideFullScreen && <TouchableOpacity onPress={toggleFullScreen} style={{ width: 60, height: 60, justifyContent: 'center', alignItems: 'center', }} >
-        <CustomIcon type={'MaterialCommunityIcons'} name={'fullscreen'} color={ColorsPalett.textColorMain} style={{ fontSize: 28, }} />
+      {Platform.OS === 'android' && !hideFullScreen && <TouchableOpacity onPress={toggleFullScreen} style={button} >
+        <CustomIcon type={'MaterialCommunityIcons'} name={'fullscreen'} color={ColorsPalett.textColorMain} style={icon} />
       </TouchableOpacity>}
     </View>
   );
 }
+
+const style = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 10,
+    right: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    zIndex: 99
+  },
+  button: {
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    fontSize: 28,
+  }
+});
 
 export default memo(TopButtons);

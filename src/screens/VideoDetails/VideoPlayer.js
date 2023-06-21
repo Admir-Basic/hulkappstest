@@ -2,7 +2,7 @@
 // Libraries
 // ===================================================================
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { View, } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import VideoPlayer from 'react-native-video-controls';
 import convertToCache, { convertAsync } from "react-native-video-cache";
 // ===================================================================
@@ -26,16 +26,38 @@ const VideoPlayerComponent = ({ item, videoProgressLocal = 0, fullScreen, orient
   const offlineMode = useSelector(selectOfflineMode)
   // ===================================================================
 
+  // ===================================================================
+  // Style
+  // -------------------------------------------------------------------
+  const { container, containerInner, videoStyle } = style
+  // ===================================================================
+
+  // ===================================================================
+  // Ref
+  // -------------------------------------------------------------------
   const player = useRef(null)
+  // ===================================================================
 
+  // ===================================================================
+  // State
+  // -------------------------------------------------------------------
   const [cashedVideo, setCashedVideo] = useState(null)
+  // ===================================================================
 
-  const onBuffer = (buffer) => {
-  }
+  // ===================================================================
+  // useEffect
+  // -------------------------------------------------------------------
+  useEffect(() => {
+    if (item?.sources) {
+      let url = item.sources;
+      convertAsync(url).then((res) => { setCashedVideo(res); })
+    }
+  }, [])
+  // ===================================================================
 
-  const videoError = (err) => {
-  }
-
+  // ===================================================================
+  // Methods
+  // -------------------------------------------------------------------
   const onProgress = (data) => {
     dispatch(setVideoProgress(
       {
@@ -43,12 +65,6 @@ const VideoPlayerComponent = ({ item, videoProgressLocal = 0, fullScreen, orient
         time: data.currentTime
       }
     ))
-  }
-
-  const onPlay = () => {
-  }
-
-  const onPause = (data) => {
   }
 
   const onEnd = () => {
@@ -62,19 +78,23 @@ const VideoPlayerComponent = ({ item, videoProgressLocal = 0, fullScreen, orient
         }
       ))
     }, 10)
-
   }
+  // ===================================================================
 
   return (
-    <View style={{ width: '100%', flex: 1, borderRadius: 5, overflow: 'hidden' }}>
-      <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: ColorsPalett.cardBackgroundInner }}>
+    <View style={container}>
+      <View style={containerInner}>
         <VideoPlayer
           source={{ uri: offlineMode && cashedVideo ? cashedVideo : item?.sources ? item.sources : null }}
           poster={`${VideoSettings.SOURCE}/${item.thumb}`}
           ref={player}
-          onBuffer={onBuffer}
-          onError={videoError}
-          videoStyle={{ width: '100%', height: fullScreen || orientation === 'landscape' ? '100%' : VideoSettings.VIDEO_HEIGHT - 25 - VideoSettings.VIDEO_INFO_HEIGHT }}
+
+          videoStyle={[
+            videoStyle,
+            {
+              height: fullScreen || orientation === 'landscape' ? '100%' : VideoSettings.VIDEO_HEIGHT - 25 - VideoSettings.VIDEO_INFO_HEIGHT
+            }
+          ]}
           paused={false}
           toggleResizeModeOnFullscreen={false}
           tapAnywhereToPause={true}
@@ -85,8 +105,6 @@ const VideoPlayerComponent = ({ item, videoProgressLocal = 0, fullScreen, orient
           resizeMode={"cover"}
 
           onProgress={onProgress}
-          onPlay={onPlay}
-          onPause={onPause}
           onEnd={onEnd}
 
           onLoad={() => {
@@ -99,9 +117,6 @@ const VideoPlayerComponent = ({ item, videoProgressLocal = 0, fullScreen, orient
           onExitFullscreen={() => {
           }}
 
-          // disablePlayPause
-          // disableSeekbar
-          // disableTimer
           disableFullscreen
           disableBack
           disableVolume
@@ -112,5 +127,24 @@ const VideoPlayerComponent = ({ item, videoProgressLocal = 0, fullScreen, orient
     </View>
   );
 }
+
+const style = StyleSheet.create({
+  container: {
+    width: '100%',
+    flex: 1,
+    borderRadius: 5,
+    overflow: 'hidden'
+  },
+  containerInner: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: ColorsPalett.cardBackgroundInner
+  },
+  videoStyle: {
+    width: '100%',
+  }
+});
 
 export default VideoPlayerComponent;

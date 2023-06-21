@@ -9,15 +9,18 @@ import NetInfo from "@react-native-community/netinfo";
 import { useDispatch, useSelector, } from 'react-redux';
 import { selectNetInfo, setNetInfo } from 'reduxConfiguration/slices/netInfoSlice';
 // ===================================================================
-// Components
-// ===================================================================
-// ===================================================================
 
-const MyNetInfo = ({ }) => {
-
+const MyNetInfo = () => {
+    // ===================================================================
+    // Redux props
+    // -------------------------------------------------------------------
     const dispatchRedux = useDispatch()
     const netInfo = useSelector(selectNetInfo)
+    // ===================================================================
 
+    // ===================================================================
+    // useEffect
+    // -------------------------------------------------------------------
     useEffect(() => {
         const connection = NetInfo.addEventListener(state => {
             _handleConnectionChange(state.isConnected);
@@ -26,10 +29,15 @@ const MyNetInfo = ({ }) => {
             connection()
         };
     }, []);
+    // ===================================================================
 
+    // ===================================================================
+    // Methods
+    // -------------------------------------------------------------------
     const _handleConnectionChange = useCallback((isConnected) => {
         dispatchRedux(setNetInfo(isConnected))
     }, [])
+    // ===================================================================
 
     return null
 }
